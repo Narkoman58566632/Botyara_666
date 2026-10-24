@@ -9,7 +9,7 @@ firebase: {
     databaseURL: 'https://botyara-f4b18-default-rtdb.firebaseio.com',
     projectId: 'botyara-f4b18',
     appId: '1:123064665877:web:3e4592412ed36ad4260b1c',
-  },
+  }
 
   // Twitch Developer Console → ваше приложение → Client ID
   twitchClientId: '9tmo6brpt2wbubp4m8p1nzekm4bfp2',
