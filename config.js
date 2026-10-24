@@ -3,7 +3,7 @@
 
 export const config = {
   // Firebase Console → ⚙ Project settings → General → Your apps → Web app → SDK setup and configuration
-const firebaseConfig = {
+firebaseConfig = {
   apiKey: "AIzaSyAFjEqq9ZOVQnCGlBIQAKi6Ikl9ENGIvvc",
   authDomain: "botyara-f4b18.firebaseapp.com",
   databaseURL: "https://botyara-f4b18-default-rtdb.firebaseio.com",
