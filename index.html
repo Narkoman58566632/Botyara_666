@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="referrer" content="no-referrer">
+  <title>Кабинет Twitch-бота</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-in">
+      <div class="brand">Кабинет бота</div>
+      <div id="userbox" class="userbox" hidden>
+        <span id="userNick" class="usernick"></span>
+        <button id="logoutBtn" class="btn ghost small" type="button">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <!-- Загрузка -->
+    <section id="view-loading" class="view center" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="loadingText">Загрузка…</p>
+    </section>
+
+    <!-- Ошибка настройки / сети -->
+    <section id="view-error" class="view card" hidden>
+      <h2>Что-то пошло не так</h2>
+      <p id="errorText" class="muted"></p>
+      <button id="errorRetry" class="btn primary" type="button">Попробовать снова</button>
+    </section>
+
+    <!-- Вход -->
+    <section id="view-login" class="view" hidden>
+      <div class="card hero">
+        <h1>Управляйте ботом на своём канале</h1>
+        <p class="muted">Ранг Valorant в чате, свои команды и авто-сообщения: всё настраивается здесь, а изменения сразу попадают в бота.</p>
+        <button id="loginBtn" class="btn twitch" type="button">Войти через Twitch</button>
+        <p class="hint">Сайт узнаёт только ваш Twitch-ник. Доступ к аккаунту и пароль ему не нужны.</p>
+      </div>
+
+      <div class="card">
+        <h2>Как подключить бота</h2>
+        <ol class="steps">
+          <li>
+            <strong>Добавьте бота на свой канал.</strong>
+            Откройте чат бота<span class="botname"></span> и напишите там:
+            <code>!join Ник#Тег eu</code>
+            Здесь <em>Ник#Тег</em>: ваш аккаунт Valorant, а <em>eu</em>: регион (eu, na, ap или kr).
+            Например: <code>!join Player#1234 eu</code>
+          </li>
+          <li><strong>Нажмите «Войти через Twitch»</strong> на этой странице. Кабинет откроется, как только бот увидит ваш вход.</li>
+          <li><strong>Настройте всё здесь:</strong> аккаунт Valorant, команды и авто-сообщения.</li>
+        </ol>
+        <details>
+          <summary>Что умеет бот</summary>
+          <ul class="plain">
+            <li><strong>!rank</strong>: бот пишет в чат ваш текущий ранг в Valorant.</li>
+            <li><strong>Свои команды</strong>: например, <code>!discord</code> отвечает ссылкой на сервер. В тексте можно использовать <code>{user}</code>: вместо него бот подставит ник того, кто написал команду.</li>
+            <li><strong>Авто-сообщения</strong>: бот сам пишет их в чат по очереди через заданное число минут, если в чате в это время кто-то общается.</li>
+          </ul>
+        </details>
+        <details>
+          <summary>Кто ещё может управлять ботом</summary>
+          <p class="muted">Модераторы вашего канала на Twitch могут управлять ботом командами прямо в чате (например <code>!addcom</code>, <code>!setrank</code>, <code>!timer</code>). Через этот сайт управляет только владелец канала.</p>
+        </details>
+        <details>
+          <summary>Я написал !join, но кабинет пустой</summary>
+          <p class="muted">Кабинет появляется только после того, как бот подключился к вашему каналу. Напишите <code>!join Ник#Тег</code> в чате бота и подождите несколько секунд, страница обновится сама.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- Ожидание привязки -->
+    <section id="view-linking" class="view center card" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <h2>Подключаем ваш аккаунт…</h2>
+      <p class="muted">Ждём ответа бота. Обычно это занимает несколько секунд.</p>
+    </section>
+
+    <!-- Привязка не удалась -->
+    <section id="view-linkfail" class="view card" hidden>
+      <h2>Не получилось подключиться</h2>
+      <p class="muted">Бот не ответил или не принял вход. Возможно, бот сейчас выключен, или вход через Twitch прошёл с ошибкой. Попробуйте ещё раз, а если не получится, напишите владельцу бота.</p>
+      <button id="linkRetry" class="btn primary" type="button">Попробовать снова</button>
+    </section>
+
+    <!-- Канал не подключён к боту -->
+    <section id="view-nochannel" class="view card" hidden>
+      <h2>Бот ещё не подключён к вашему каналу</h2>
+      <p>Сначала напишите в чате бота<span class="botname"></span>:</p>
+      <p><code>!join Ник#Тег eu</code></p>
+      <p class="muted">Вместо <em>Ник#Тег</em> укажите свой аккаунт Valorant, например <code>!join Player#1234 eu</code>. Эта страница обновится сама, когда бот подключится.</p>
+    </section>
+
+    <!-- Кабинет -->
+    <section id="view-dashboard" class="view" hidden>
+      <!-- Бот включён -->
+      <div class="card row between">
+        <div>
+          <h2>Бот на канале</h2>
+          <p id="enabledNote" class="muted"></p>
+        </div>
+        <label class="switch">
+          <input id="enabledToggle" type="checkbox">
+          <span class="slider"></span>
+          <span id="enabledLabel" class="switch-label"></span>
+        </label>
+      </div>
+
+      <!-- Valorant -->
+      <form id="valorantForm" class="card" novalidate>
+        <h2>Аккаунт Valorant</h2>
+        <p class="muted">Бот показывает ранг этого аккаунта по команде <code>!rank</code>.</p>
+        <div class="grid3">
+          <label class="field">
+            <span>Ник</span>
+            <input id="vName" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Player">
+          </label>
+          <label class="field">
+            <span>Тег (после #)</span>
+            <input id="vTag" type="text" maxlength="6" autocomplete="off" spellcheck="false" placeholder="1234">
+          </label>
+          <label class="field">
+            <span>Регион</span>
+            <select id="vRegion">
+              <option value="eu">eu: Европа</option>
+              <option value="na">na: Северная Америка</option>
+              <option value="ap">ap: Азия и Океания</option>
+              <option value="kr">kr: Корея</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">Сайт проверяет только формат. Существует ли такой аккаунт, видно по ответу бота: если ошибиться, <code>!rank</code> ответит «Аккаунт не найден».</p>
+        <p id="vError" class="error" hidden></p>
+        <button id="vSave" class="btn primary" type="submit">Сохранить аккаунт</button>
+      </form>
+
+      <!-- Команды -->
+      <div class="card">
+        <h2>Свои команды</h2>
+        <p class="muted">Зритель пишет команду, бот отвечает текстом. В тексте можно использовать <code>{user}</code>: бот подставит ник написавшего.</p>
+        <ul id="cmdList" class="list"></ul>
+        <p id="cmdEmpty" class="empty" hidden>Пока нет ни одной команды.</p>
+        <form id="cmdForm" class="editor" novalidate>
+          <h3 id="cmdFormTitle">Новая команда</h3>
+          <label class="field">
+            <span>Название</span>
+            <input id="cmdName" type="text" maxlength="21" autocomplete="off" spellcheck="false" placeholder="!discord">
+          </label>
+          <label class="field">
+            <span>Ответ бота <small id="cmdCount" class="counter"></small></span>
+            <textarea id="cmdText" rows="3" maxlength="400" placeholder="Заходи к нам в Discord: https://… , {user}!"></textarea>
+          </label>
+          <p id="cmdError" class="error" hidden></p>
+          <div class="row gap">
+            <button id="cmdSave" class="btn primary" type="submit">Добавить команду</button>
+            <button id="cmdCancel" class="btn ghost" type="button" hidden>Отмена</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Авто-сообщения -->
+      <div class="card">
+        <div class="row between">
+          <div>
+            <h2>Авто-сообщения</h2>
+            <p class="muted">Бот сам пишет эти сообщения в чат по очереди.</p>
+          </div>
+          <label class="switch">
+            <input id="timerToggle" type="checkbox">
+            <span class="slider"></span>
+            <span id="timerLabel" class="switch-label"></span>
+          </label>
+        </div>
+
+        <form id="intervalForm" class="row gap end" novalidate>
+          <label class="field narrow">
+            <span>Интервал, минут</span>
+            <input id="tInterval" type="text" inputmode="numeric" autocomplete="off" placeholder="по умолчанию">
+          </label>
+          <button id="tIntervalSave" class="btn" type="submit">Сохранить интервал</button>
+        </form>
+        <p id="intervalNote" class="hint"></p>
+        <p id="intervalError" class="error" hidden></p>
+
+        <ol id="timerList" class="list numbered"></ol>
+        <p id="timerEmpty" class="empty" hidden>Пока нет ни одного авто-сообщения.</p>
+        <p id="timerWarn" class="warn" hidden></p>
+
+        <form id="timerForm" class="editor" novalidate>
+          <h3 id="timerFormTitle">Новое авто-сообщение</h3>
+          <label class="field">
+            <span>Текст <small id="timerCount" class="counter"></small></span>
+            <textarea id="timerText" rows="3" maxlength="400" placeholder="Не забудьте подписаться на канал!"></textarea>
+          </label>
+          <p id="timerError" class="error" hidden></p>
+          <div class="row gap">
+            <button id="timerSave" class="btn primary" type="submit">Добавить сообщение</button>
+            <button id="timerCancel" class="btn ghost" type="button" hidden>Отмена</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card muted small">
+        <p>«Выйти» закрывает кабинет только на этом устройстве. Бот и все настройки остаются как есть. Чтобы вернуться, войдите через Twitch снова. Отключить бота от канала можно командой <code>!leave</code> в чате бота.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap foot muted small">Настройки сохраняются сразу и применяются ботом без перезапуска.</footer>
+</body>
+</html>
