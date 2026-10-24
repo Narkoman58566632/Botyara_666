@@ -3,16 +3,19 @@
 
 export const config = {
   // Firebase Console → ⚙ Project settings → General → Your apps → Web app → SDK setup and configuration
-  firebase: {
-    apiKey: 'ВСТАВЬТЕ_apiKey',
-    authDomain: 'ВСТАВЬТЕ_authDomain',
-    databaseURL: 'ВСТАВЬТЕ_databaseURL',
-    projectId: 'ВСТАВЬТЕ_projectId',
-    appId: 'ВСТАВЬТЕ_appId',
-  },
+const firebaseConfig = {
+  apiKey: "AIzaSyAFjEqq9ZOVQnCGlBIQAKi6Ikl9ENGIvvc",
+  authDomain: "botyara-f4b18.firebaseapp.com",
+  databaseURL: "https://botyara-f4b18-default-rtdb.firebaseio.com",
+  projectId: "botyara-f4b18",
+  storageBucket: "botyara-f4b18.firebasestorage.app",
+  messagingSenderId: "123064665877",
+  appId: "1:123064665877:web:8b5abb323c5578fb260b1c",
+  measurementId: "G-WWT8ZQ6FLV"
+};
 
   // Twitch Developer Console → ваше приложение → Client ID
-  twitchClientId: 'ВСТАВЬТЕ_Client_ID',
+  twitchClientId: '9tmo6brpt2wbubp4m8p1nzekm4bfp2',
 
   // Адрес сайта = OAuth Redirect URL в приложении Twitch. Должен совпадать символ в символ.
   // Оставьте пустым, чтобы сайт взял свой собственный адрес автоматически
@@ -20,11 +23,11 @@ export const config = {
   redirectUri: '',
 
   // Twitch-ник бота (чат, где пишут !join). Пусто = в подсказках будет просто «в чате бота».
-  botName: '',
+  botName: 'Botyara_666',
 
   // Сколько авто-сообщений бот использует по умолчанию (MAX_TIMERS в боте).
   // Если в списке больше, сайт покажет предупреждение. По схеме БД максимум 20.
-  botTimersLimit: 10,
+  botTimersLimit: 20,
 
   // Сколько секунд ждать ответа бота после входа через Twitch.
   linkTimeoutSec: 15,
