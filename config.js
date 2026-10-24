@@ -3,16 +3,13 @@
 
 export const config = {
   // Firebase Console → ⚙ Project settings → General → Your apps → Web app → SDK setup and configuration
-firebaseConfig = {
-  apiKey: "AIzaSyAFjEqq9ZOVQnCGlBIQAKi6Ikl9ENGIvvc",
-  authDomain: "botyara-f4b18.firebaseapp.com",
-  databaseURL: "https://botyara-f4b18-default-rtdb.firebaseio.com",
-  projectId: "botyara-f4b18",
-  storageBucket: "botyara-f4b18.firebasestorage.app",
-  messagingSenderId: "123064665877",
-  appId: "1:123064665877:web:8b5abb323c5578fb260b1c",
-  measurementId: "G-WWT8ZQ6FLV"
-};
+firebase: {
+    apiKey: 'AIzaSyAFjEqq9ZOVQnCGlBIQAKi6Ikl9ENGIvvc',
+    authDomain: 'botyara-f4b18.firebaseapp.com',
+    databaseURL: 'https://botyara-f4b18-default-rtdb.firebaseio.com',
+    projectId: 'botyara-f4b18',
+    appId: '1:123064665877:web:3e4592412ed36ad4260b1c',
+  },
 
   // Twitch Developer Console → ваше приложение → Client ID
   twitchClientId: '9tmo6brpt2wbubp4m8p1nzekm4bfp2',
